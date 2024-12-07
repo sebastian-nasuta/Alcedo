@@ -30,8 +30,6 @@ public partial class MainPage : ContentPage
                 await stream.CopyToAsync(memoryStream);
                 var imageBytes = memoryStream.ToArray();
 
-                //while (imageBytes.Length > 1 * 1024 * 1024 / 10)
-
                 do
                 {
                     imageBytes = CompressImage(imageBytes);
