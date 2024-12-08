@@ -12,7 +12,7 @@ public partial class MainPage : ContentPage
         InitializeComponent();
     }
 
-    private async void OnLoadImageClicked(object sender, EventArgs e)
+    private async void OnLoadImageClickedAsync(object sender, EventArgs e)
     {
         try
         {
@@ -22,29 +22,54 @@ public partial class MainPage : ContentPage
                 PickerTitle = "Please select an image file"
             });
 
-            if (result != null)
-            {
-                using var stream = await result.OpenReadAsync();
-                using var memoryStream = new MemoryStream();
-
-                await stream.CopyToAsync(memoryStream);
-                var imageBytes = memoryStream.ToArray();
-
-                do
-                {
-                    imageBytes = CompressImage(imageBytes);
-
-                    Base64Image = Convert.ToBase64String(imageBytes);
-                }
-                while (Base64Image.Length > 70000);
-
-                LoadedImage.Source = ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
-            }
+            await LoadAndCompressImageAsync(result);
         }
         catch (Exception ex)
         {
             // Handle exceptions (e.g., log the error, show a message to the user)
             await DisplayAlert("Error", $"An error occurred while picking the file: {ex.Message}", "OK");
+        }
+    }
+
+    private async void OnTakePhotoClickedAsync(object sender, EventArgs e)
+    {
+        try
+        {
+            var result = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
+            {
+                Title = "Please take a photo"
+            });
+
+            await LoadAndCompressImageAsync(result);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            await DisplayAlert("Error", $"An error occurred while taking the photo: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task LoadAndCompressImageAsync(FileResult? result)
+    {
+        if (result != null)
+        {
+            TagsLabel.Text = string.Empty;
+
+            using var stream = await result.OpenReadAsync();
+            using var memoryStream = new MemoryStream();
+
+            await stream.CopyToAsync(memoryStream);
+            var imageBytes = memoryStream.ToArray();
+
+            do
+            {
+                imageBytes = CompressImage(imageBytes);
+
+                Base64Image = Convert.ToBase64String(imageBytes);
+            }
+            while (Base64Image.Length > 65000);
+
+            LoadedImage.Source = ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
         }
     }
 
@@ -59,7 +84,7 @@ public partial class MainPage : ContentPage
         return outputStream.ToArray();
     }
 
-    private async void OnGenerateTagsClicked(object sender, EventArgs e)
+    private async void OnGenerateTagsClickedAsync(object sender, EventArgs e)
     {
         try
         {
@@ -69,9 +94,9 @@ public partial class MainPage : ContentPage
                 return;
             }
 
+            TagsLabel.Text = "Loading...";
             var tags = await ComputerVisionService.GetTagsAsync(Base64Image);
             TagsLabel.Text = tags[0];
-            await DisplayAlert("Tags Generated", "Tags have been generated successfully", "OK");
         }
         catch (Exception ex)
         {

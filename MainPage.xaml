@@ -7,11 +7,19 @@
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
-            <Button
-                x:Name="LoadImageBtn"
-                Text="Load Image"
-                Clicked="OnLoadImageClicked"
-                HorizontalOptions="Fill" />
+            <HorizontalStackLayout HorizontalOptions="Fill">
+                <Button
+                    x:Name="LoadImageBtn"
+                    Text="Load Image"
+                    Clicked="OnLoadImageClickedAsync"
+                    HorizontalOptions="Start" />
+                
+                <Button
+                    x:Name="TakePhotoBtn"
+                    Text="Take Photo"
+                    Clicked="OnTakePhotoClickedAsync"
+                    HorizontalOptions="End" />
+            </HorizontalStackLayout>
 
             <Image
                 x:Name="LoadedImage"
@@ -21,7 +29,7 @@
             <Button
                 x:Name="GenerateTagsBtn"
                 Text="Generate tags"
-                Clicked="OnGenerateTagsClicked"
+                Clicked="OnGenerateTagsClickedAsync"
                 HorizontalOptions="Fill" />
 
             <Label
