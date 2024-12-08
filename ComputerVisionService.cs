@@ -19,10 +19,12 @@ internal class ComputerVisionService
 
             ChatMessage chatMessage = new UserChatMessage([
                 ChatMessageContentPart.CreateTextPart("You are an assistant that generates tags for instagram image send to you in base64 format."),
-                ChatMessageContentPart.CreateTextPart("Every image is ink or pencil drawing."),
-                ChatMessageContentPart.CreateTextPart("You always generate 10 tags for each image."),
+                ChatMessageContentPart.CreateTextPart("You firstly generate 10 tags that describe only the illustration, not the style or technique."),
+                ChatMessageContentPart.CreateTextPart("In next step you should generate 5 tags to describe the style and finaly 5 tags to describe the technique."),
                 ChatMessageContentPart.CreateTextPart("Every tag should start with a '#' symbol."),
                 ChatMessageContentPart.CreateTextPart("Separate tags with spaces. Dont separate tags with commas or any other characters."),
+                ChatMessageContentPart.CreateTextPart("Every image probably will be ink, pencil or coloured pencils drawing. If not you must return tags anyway, but 1st tag must be named: '#probablyNotDrawing' or '#definitelyNotDrawing' (You must evaluate which one is more appropriate)."),
+                ChatMessageContentPart.CreateTextPart("Sometimes image will be part of word or sentence written on paper."),
                 ChatMessageContentPart.CreateImagePart(new Uri($"data:image/png;base64,{base64Image}"))
             ]);
 
