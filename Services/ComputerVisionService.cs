@@ -1,13 +1,13 @@
 ﻿using OpenAI.Chat;
 
-namespace Alcedo;
+namespace Alcedo.Services;
 
 internal class ComputerVisionService
 {
     private static readonly string apiKey = "";
 
     /// <summary>
-    /// This method generates 10 tags that describe the image from the base64Image parameter.
+    /// This method generates tags that describe the image from the base64Image parameter.
     /// </summary>
     internal static async Task<string[]> GetTagsAsync(string base64Image)
     {
