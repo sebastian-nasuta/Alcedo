@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Alcedo.Pages.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <ScrollView>
+        <Grid
+            Padding="30,0"
+            ColumnDefinitions="*,*"
+            RowDefinitions="Auto,Auto,Auto,Auto">
+
+            <Button
+                x:Name="LoadImageBtn"
+                Grid.Row="0"
+                Grid.Column="0"
+                Clicked="OnLoadImageClickedAsync"
+                HorizontalOptions="Start"
+                Text="Load Image"
+                Margin="5" />
+
+            <Button
+                x:Name="TakePhotoBtn"
+                Grid.Row="0"
+                Grid.Column="1"
+                Clicked="OnTakePhotoClickedAsync"
+                HorizontalOptions="End"
+                Text="Take Photo"
+                Margin="5" />
+
+            <Image
+                x:Name="LoadedImage"
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Aspect="AspectFit"
+                MaximumHeightRequest="300"
+                Margin="5" />
+
+            <Button
+                x:Name="GenerateTagsBtn"
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Clicked="OnGenerateTagsClickedAsync"
+                HorizontalOptions="Fill"
+                Text="Generate tags"
+                Margin="5" />
+
+            <Label
+                x:Name="TagsLabel"
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Tags will appear here"
+                Margin="5" />
+        </Grid>
+    </ScrollView>
+
+</ContentPage>

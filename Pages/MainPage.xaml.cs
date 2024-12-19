@@ -1,7 +1,8 @@
 ﻿
+using Alcedo.Services;
 using SkiaSharp;
 
-namespace Alcedo;
+namespace Alcedo.Pages;
 
 public partial class MainPage : ContentPage
 {
