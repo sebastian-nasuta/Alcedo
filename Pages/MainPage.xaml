@@ -8,51 +8,96 @@
         <Grid
             Padding="30,0"
             ColumnDefinitions="*,*"
-            RowDefinitions="Auto,Auto,Auto,Auto">
+            RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 
             <Button
-                x:Name="LoadImageBtn"
+                x:Name="loadImageBtn"
                 Grid.Row="0"
                 Grid.Column="0"
+                Margin="5"
                 Clicked="OnLoadImageClickedAsync"
-                HorizontalOptions="Start"
-                Text="Load Image"
-                Margin="5" />
+                FontFamily="MSO"
+                FontSize="60"
+                HorizontalOptions="Fill"
+                Text="photo_library" />
 
             <Button
-                x:Name="TakePhotoBtn"
+                x:Name="takePhotoBtn"
                 Grid.Row="0"
                 Grid.Column="1"
+                Margin="5"
                 Clicked="OnTakePhotoClickedAsync"
-                HorizontalOptions="End"
-                Text="Take Photo"
-                Margin="5" />
+                FontFamily="MSO"
+                FontSize="60"
+                HorizontalOptions="Fill"
+                Text="photo_camera" />
 
             <Image
-                x:Name="LoadedImage"
+                x:Name="loadedImage"
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
+                Margin="5"
                 Aspect="AspectFit"
-                MaximumHeightRequest="300"
-                Margin="5" />
+                MaximumHeightRequest="300" />
 
             <Button
-                x:Name="GenerateTagsBtn"
+                x:Name="generateTagsBtn"
                 Grid.Row="2"
-                Grid.ColumnSpan="2"
+                Grid.Column="0"
+                Margin="5"
                 Clicked="OnGenerateTagsClickedAsync"
+                FontFamily="MSO"
+                FontSize="60"
                 HorizontalOptions="Fill"
-                Text="Generate tags"
-                Margin="5" />
+                IsVisible="{Binding IsImageLoaded}"
+                Text="tag" />
 
-            <Label
-                x:Name="TagsLabel"
+            <Button
+                x:Name="clearImageBtn"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="5"
+                Clicked="OnClearImageClickedAsync"
+                FontFamily="MSO"
+                FontSize="60"
+                HorizontalOptions="Fill"
+                IsVisible="{Binding IsImageLoaded}"
+                Text="hide_image" />
+
+            <ActivityIndicator
+                x:Name="loadingIndicator"
                 Grid.Row="3"
                 Grid.ColumnSpan="2"
-                FontSize="20"
                 HorizontalOptions="Center"
-                Text="Tags will appear here"
-                Margin="5" />
+                IsRunning="False"
+                IsVisible="False"
+                VerticalOptions="Center" />
+
+            <StackLayout
+                x:Name="tagsStackLayout"
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                Margin="5">
+
+                <!--<HorizontalStackLayout>
+                    <Label
+                        Margin="5"
+                        FontSize="20"
+                        Text="TEST"
+                        VerticalOptions="Center" />
+                    <Button
+                        Margin="5"
+                        FontFamily="MaterialIcons"
+                        FontSize="20"
+                        Text="content_copy" />
+                </HorizontalStackLayout>
+
+                <Editor
+                    Margin="5"
+                    HeightRequest="80"
+                    Text="#test" />-->
+
+            </StackLayout>
         </Grid>
     </ScrollView>
 

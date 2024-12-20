@@ -6,21 +6,34 @@ namespace Alcedo.Pages;
 
 public partial class MainPage : ContentPage
 {
+    private bool _isImageLoaded;
+
+    public bool IsImageLoaded
+    {
+        get => _isImageLoaded;
+        set
+        {
+            _isImageLoaded = value;
+            OnPropertyChanged();
+        }
+    }
+
     public string Base64Image { get; private set; } = string.Empty;
 
     public MainPage()
     {
         InitializeComponent();
+        BindingContext = this;
     }
 
     private async void OnLoadImageClickedAsync(object sender, EventArgs e)
     {
         try
         {
+            ToggleLoadingIndicator(true);
             var result = await FilePicker.PickAsync(new PickOptions
             {
-                FileTypes = FilePickerFileType.Images,
-                PickerTitle = "Please select an image file"
+                FileTypes = FilePickerFileType.Images
             });
 
             await LoadAndCompressImageAsync(result);
@@ -30,16 +43,32 @@ public partial class MainPage : ContentPage
             // Handle exceptions (e.g., log the error, show a message to the user)
             await DisplayAlert("Error", $"An error occurred while picking the file: {ex.Message}", "OK");
         }
+        finally
+        {
+            ToggleLoadingIndicator(false);
+        }
+    }
+
+    private async void OnClearImageClickedAsync(object sender, EventArgs e)
+    {
+        try
+        {
+            ToggleLoadingIndicator(true);
+            SetImageSource(null);
+            await Task.CompletedTask;
+        }
+        finally
+        {
+            ToggleLoadingIndicator(false);
+        }
     }
 
     private async void OnTakePhotoClickedAsync(object sender, EventArgs e)
     {
         try
         {
-            var result = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
-            {
-                Title = "Please take a photo"
-            });
+            ToggleLoadingIndicator(true);
+            var result = await MediaPicker.CapturePhotoAsync();
 
             await LoadAndCompressImageAsync(result);
         }
@@ -48,13 +77,48 @@ public partial class MainPage : ContentPage
             // Handle exceptions (e.g., log the error, show a message to the user)
             await DisplayAlert("Error", $"An error occurred while taking the photo: {ex.Message}", "OK");
         }
+        finally
+        {
+            ToggleLoadingIndicator(false);
+        }
+    }
+
+    private async void OnGenerateTagsClickedAsync(object sender, EventArgs e)
+    {
+        try
+        {
+            if (loadedImage.Source is null)
+            {
+                await DisplayAlert("Error", "Please load an image first", "OK");
+                return;
+            }
+
+            ToggleLoadingIndicator(true);
+
+            var groupedTags = await ComputerVisionService.GetTagsAsync(Base64Image);
+
+            tagsStackLayout.Children.Clear();
+
+            foreach (var tagsGroup in groupedTags)
+            {
+                RenderTagGroup(tagsGroup);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            await DisplayAlert("Error", $"An error occurred while generating tags: {ex.Message}", "OK");
+        }
+        finally
+        {
+            ToggleLoadingIndicator(false);
+        }
     }
 
     private async Task LoadAndCompressImageAsync(FileResult? result)
     {
         if (result != null)
         {
-            TagsLabel.Text = string.Empty;
 
             using var stream = await result.OpenReadAsync();
             using var memoryStream = new MemoryStream();
@@ -70,8 +134,46 @@ public partial class MainPage : ContentPage
             }
             while (Base64Image.Length > 65000);
 
-            LoadedImage.Source = ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
+            SetImageSource(ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image))));
         }
+    }
+
+    private void RenderTagGroup(IGrouping<string, string> tagsGroup)
+    {
+        var label = new Label
+        {
+            FontSize = 20,
+            Margin = new Thickness(5),
+            Text = tagsGroup.Key.ToUpper(),
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var copyButton = new Button
+        {
+            FontFamily = "MSO",
+            FontSize = 20,
+            Margin = new Thickness(5),
+            Text = "content_copy",
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var editor = new Editor
+        {
+            Text = string.Join(" ", tagsGroup.Select(x => "#" + x)),
+            HeightRequest = 80,
+            Margin = new Thickness(5)
+        };
+
+        copyButton.Clicked += (s, args) => Clipboard.SetTextAsync(editor.Text);
+
+        var stackLayout = new StackLayout
+        {
+            Orientation = StackOrientation.Horizontal,
+            Children = { label, copyButton }
+        };
+
+        tagsStackLayout.Children.Add(stackLayout);
+        tagsStackLayout.Children.Add(editor);
     }
 
     private static byte[] CompressImage(byte[] imageBytes)
@@ -85,24 +187,15 @@ public partial class MainPage : ContentPage
         return outputStream.ToArray();
     }
 
-    private async void OnGenerateTagsClickedAsync(object sender, EventArgs e)
+    private void SetImageSource(ImageSource? imageSource)
     {
-        try
-        {
-            if (LoadedImage.Source is null)
-            {
-                await DisplayAlert("Error", "Please load an image first", "OK");
-                return;
-            }
+        tagsStackLayout.Children.Clear();
+        loadedImage.Source = imageSource;
+        IsImageLoaded = imageSource != null;
+    }
 
-            TagsLabel.Text = "Loading...";
-            var tags = await ComputerVisionService.GetTagsAsync(Base64Image);
-            TagsLabel.Text = tags[0];
-        }
-        catch (Exception ex)
-        {
-            // Handle exceptions (e.g., log the error, show a message to the user)
-            await DisplayAlert("Error", $"An error occurred while generating tags: {ex.Message}", "OK");
-        }
+    private void ToggleLoadingIndicator(bool value)
+    {
+        loadingIndicator.IsRunning = loadingIndicator.IsVisible = value;
     }
 }
