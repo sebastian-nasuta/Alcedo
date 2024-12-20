@@ -1,4 +1,5 @@
 ﻿using OpenAI.Chat;
+using System.Text.Json;
 
 namespace Alcedo.Services;
 
@@ -9,33 +10,90 @@ internal class ComputerVisionService
     /// <summary>
     /// This method generates tags that describe the image from the base64Image parameter.
     /// </summary>
-    internal static async Task<string[]> GetTagsAsync(string base64Image)
+    internal static async Task<ILookup<string, string>> GetTagsAsync(string base64Image)
     {
         try
         {
             var model = "gpt-3.5-turbo";
             model = "gpt-4o";
-            ChatClient client = new(model: model, apiKey: apiKey);
+            var client = new ChatClient(model: model, apiKey: apiKey);
 
-            ChatMessage chatMessage = new UserChatMessage([
-                ChatMessageContentPart.CreateTextPart("You are an assistant that generates tags for instagram image send to you in base64 format."),
-                ChatMessageContentPart.CreateTextPart("You firstly generate 10 tags that describe only the illustration, not the style or technique."),
-                ChatMessageContentPart.CreateTextPart("In next step you should generate 5 tags to describe the style and finaly 5 tags to describe the technique."),
-                ChatMessageContentPart.CreateTextPart("Every tag should start with a '#' symbol."),
-                ChatMessageContentPart.CreateTextPart("Separate tags with spaces. Dont separate tags with commas or any other characters."),
-                ChatMessageContentPart.CreateTextPart("Every image probably will be ink, pencil or coloured pencils drawing. If not you must return tags anyway, but 1st tag must be named: '#probablyNotDrawing' or '#definitelyNotDrawing' (You must evaluate which one is more appropriate)."),
-                ChatMessageContentPart.CreateTextPart("Sometimes image will be part of word or sentence written on paper."),
-                ChatMessageContentPart.CreateImagePart(new Uri($"data:image/png;base64,{base64Image}"))
-            ]);
+            var systemMessage = BuildSystemMessage();
+            var userMessage = BuildUserMessage(base64Image);
 
-            ChatCompletion completion = await client.CompleteChatAsync(chatMessage);
+            var completion = await client.CompleteChatAsync(
+                [systemMessage, userMessage],
+                new ChatCompletionOptions()
+                {
+                    ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat()
+                });
+            
+            var tags = completion.Value.Content[0].Text;
 
-            return [completion.Content[0].Text];
+            var tagsObject = JsonSerializer.Deserialize<Dictionary<string, string[]>>(tags)
+                ?? throw new Exception("An error occurred while deserializing the tags. Prompt response: " + tags);
+
+            return tagsObject
+                .SelectMany(kvp => kvp.Value, (kvp, tag) => new { kvp.Key, Tag = tag })
+                .ToLookup(x => x.Key, x => x.Tag);
         }
         catch (Exception ex)
         {
             // Handle exceptions (e.g., log the error, show a message to the user)
             throw new Exception($"An error occurred while generating tags: {ex.Message}");
         }
+    }
+
+    private static UserChatMessage BuildUserMessage(string base64Image)
+        => new(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
+
+    private static SystemChatMessage BuildSystemMessage()
+    {
+        return new SystemChatMessage([
+            ChatMessageContentPart.CreateTextPart("You are an assistant that generates tags for Instagram images sent to you in base64 format."),
+            ChatMessageContentPart.CreateTextPart("""
+                ~TASKS~
+                1. Generate 10 tags that describe only the illustration, ignoring the style or technique.
+                2. Generate 5 tags to describe the style.
+                3. Generate 5 tags to describe the technique.
+                """),
+            ChatMessageContentPart.CreateTextPart("""
+                ~RULES~
+                - return only tags grouped in arrays named "general", "style" and "technique" in json format
+                - don't add any prefix signs like '#'
+                - all tags should consist of letters and numbers, without special characters
+                - if a tag consists of multiple words, use camelCase
+                """),
+            ChatMessageContentPart.CreateTextPart("""
+                ~EXAMPLE~
+                {
+                  "general": [
+                    "sunset",
+                    "ocean",
+                    "waves",
+                    "beach",
+                    "palmTrees",
+                    "silhouette",
+                    "sky",
+                    "clouds",
+                    "scenic",
+                    "horizon"
+                  ],
+                  "style": [
+                    "realistic",
+                    "vibrant",
+                    "colorful",
+                    "detailed",
+                    "naturalistic"
+                  ],
+                  "technique": [
+                    "oilPainting",
+                    "brushStrokes",
+                    "layering",
+                    "blending",
+                    "impasto"
+                  ]
+                }
+                """)]);
     }
 }
