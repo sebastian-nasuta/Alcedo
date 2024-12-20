@@ -13,6 +13,9 @@ namespace Alcedo
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("MaterialSymbolsOutlined.ttf", "MSO");
+                    fonts.AddFont("MaterialSymbolsRounded.ttf", "MSR");
+                    fonts.AddFont("MaterialSymbolsSharp.ttf", "MSS");
                 });
 
 #if DEBUG
