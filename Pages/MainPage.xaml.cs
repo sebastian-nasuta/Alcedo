@@ -95,7 +95,8 @@ public partial class MainPage : ContentPage
 
             ToggleLoadingIndicator(true);
 
-            var groupedTags = await ComputerVisionService.GetTagsAsync(Base64Image);
+            var inktoberTheme = inktoberThemeEntry.Text;
+            var groupedTags = await ComputerVisionService.GetTagsAsync(Base64Image, inktoberTheme);
 
             tagsStackLayout.Children.Clear();
 
@@ -115,11 +116,24 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async void OnCopyAllTagsClickedAsync(object sender, EventArgs e)
+    {
+        try
+        {
+            var allTags = string.Join(" ", tagsStackLayout.Children.OfType<Editor>().Select(editor => editor.Text));
+            await Clipboard.SetTextAsync(allTags);
+            await DisplayAlert("Copied", "All tags have been copied to the clipboard.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"An error occurred while copying tags: {ex.Message}", "OK");
+        }
+    }
+
     private async Task LoadAndCompressImageAsync(FileResult? result)
     {
         if (result != null)
         {
-
             using var stream = await result.OpenReadAsync();
             using var memoryStream = new MemoryStream();
 

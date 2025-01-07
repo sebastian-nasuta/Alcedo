@@ -10,15 +10,36 @@ internal class ComputerVisionService
     /// <summary>
     /// This method generates tags that describe the image from the base64Image parameter.
     /// </summary>
-    internal static async Task<ILookup<string, string>> GetTagsAsync(string base64Image)
+    internal static async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? inktoberTheme = null)
     {
         try
         {
+            var tagsDictionary = new Dictionary<string, string[]>();
+            if (!string.IsNullOrWhiteSpace(inktoberTheme))
+            {
+                inktoberTheme = inktoberTheme.Trim();
+
+                tagsDictionary.Add(
+                    "inktober",
+                    [
+                        inktoberTheme,
+                        "inktober",
+                        "inktober" + inktoberTheme,
+                        "inktober" + DateTime.UtcNow.Year,
+                        "inktober" + DateTime.UtcNow.Year + inktoberTheme,
+                        "inktober52",
+                        "inktober52" + inktoberTheme,
+                        "ink",
+                        "drawing",
+                        "blackAndWhite"
+                    ]);
+            }
+
             var model = "gpt-3.5-turbo";
             model = "gpt-4o";
             var client = new ChatClient(model: model, apiKey: apiKey);
 
-            var systemMessage = BuildSystemMessage();
+            var systemMessage = BuildSystemMessage(tagsDictionary);
             var userMessage = BuildUserMessage(base64Image);
 
             var completion = await client.CompleteChatAsync(
@@ -30,10 +51,15 @@ internal class ComputerVisionService
             
             var tags = completion.Value.Content[0].Text;
 
-            var tagsObject = JsonSerializer.Deserialize<Dictionary<string, string[]>>(tags)
+            var deserializedTags = JsonSerializer.Deserialize<Dictionary<string, string[]>>(tags)
                 ?? throw new Exception("An error occurred while deserializing the tags. Prompt response: " + tags);
 
-            return tagsObject
+            foreach (var kvp in deserializedTags)
+            {
+                tagsDictionary.Add(kvp.Key, kvp.Value);
+            }
+
+            return tagsDictionary
                 .SelectMany(kvp => kvp.Value, (kvp, tag) => new { kvp.Key, Tag = tag })
                 .ToLookup(x => x.Key, x => x.Tag);
         }
@@ -44,12 +70,10 @@ internal class ComputerVisionService
         }
     }
 
-    private static UserChatMessage BuildUserMessage(string base64Image)
-        => new(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
-
-    private static SystemChatMessage BuildSystemMessage()
+    private static SystemChatMessage BuildSystemMessage(Dictionary<string, string[]> tagsDictionary)
     {
-        return new SystemChatMessage([
+        List<ChatMessageContentPart> chatMessageParts =
+        [
             ChatMessageContentPart.CreateTextPart("You are an assistant that generates tags for Instagram images sent to you in base64 format."),
             ChatMessageContentPart.CreateTextPart("""
                 ~TASKS~
@@ -63,8 +87,20 @@ internal class ComputerVisionService
                 - don't add any prefix signs like '#'
                 - all tags should consist of letters and numbers, without special characters
                 - if a tag consists of multiple words, use camelCase
-                """),
-            ChatMessageContentPart.CreateTextPart("""
+                """)
+        ];
+
+        if (tagsDictionary.Count != 0)
+        {
+            var existingTags = JsonSerializer.Serialize(tagsDictionary);
+            chatMessageParts.Add(ChatMessageContentPart.CreateTextPart($"""
+                ~EXISTING TAGS~
+                The following tags are already present and should not be generated again:
+                {existingTags}
+                """));
+        }
+
+        chatMessageParts.Add(ChatMessageContentPart.CreateTextPart("""
                 ~EXAMPLE~
                 {
                   "general": [
@@ -94,6 +130,11 @@ internal class ComputerVisionService
                     "impasto"
                   ]
                 }
-                """)]);
+            """));
+
+        return new SystemChatMessage(chatMessageParts);
     }
+
+    private static UserChatMessage BuildUserMessage(string base64Image)
+        => new(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
 }

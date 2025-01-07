@@ -7,12 +7,20 @@
     <ScrollView>
         <Grid
             Padding="30,0"
-            ColumnDefinitions="*,*"
-            RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+            ColumnDefinitions="*,*,*"
+            RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+
+            <Entry
+                x:Name="inktoberThemeEntry"
+                Grid.Row="0"
+                Grid.ColumnSpan="3"
+                Margin="5"
+                HorizontalOptions="Fill"
+                Placeholder="Enter inktober theme" />
 
             <Button
                 x:Name="loadImageBtn"
-                Grid.Row="0"
+                Grid.Row="1"
                 Grid.Column="0"
                 Margin="5"
                 Clicked="OnLoadImageClickedAsync"
@@ -23,7 +31,7 @@
 
             <Button
                 x:Name="takePhotoBtn"
-                Grid.Row="0"
+                Grid.Row="1"
                 Grid.Column="1"
                 Margin="5"
                 Clicked="OnTakePhotoClickedAsync"
@@ -32,17 +40,29 @@
                 HorizontalOptions="Fill"
                 Text="photo_camera" />
 
+            <Button
+                x:Name="clearImageBtn"
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="5"
+                Clicked="OnClearImageClickedAsync"
+                FontFamily="MSO"
+                FontSize="60"
+                HorizontalOptions="Fill"
+                IsVisible="{Binding IsImageLoaded}"
+                Text="hide_image" />
+
             <Image
                 x:Name="loadedImage"
-                Grid.Row="1"
-                Grid.ColumnSpan="2"
+                Grid.Row="2"
+                Grid.ColumnSpan="3"
                 Margin="5"
                 Aspect="AspectFit"
                 MaximumHeightRequest="300" />
 
             <Button
                 x:Name="generateTagsBtn"
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="0"
                 Margin="5"
                 Clicked="OnGenerateTagsClickedAsync"
@@ -53,21 +73,21 @@
                 Text="tag" />
 
             <Button
-                x:Name="clearImageBtn"
-                Grid.Row="2"
+                x:Name="copyAllTagsBtn"
+                Grid.Row="3"
                 Grid.Column="1"
                 Margin="5"
-                Clicked="OnClearImageClickedAsync"
+                Clicked="OnCopyAllTagsClickedAsync"
                 FontFamily="MSO"
                 FontSize="60"
                 HorizontalOptions="Fill"
                 IsVisible="{Binding IsImageLoaded}"
-                Text="hide_image" />
+                Text="content_copy" />
 
             <ActivityIndicator
                 x:Name="loadingIndicator"
-                Grid.Row="3"
-                Grid.ColumnSpan="2"
+                Grid.Row="4"
+                Grid.ColumnSpan="3"
                 HorizontalOptions="Center"
                 IsRunning="False"
                 IsVisible="False"
@@ -75,29 +95,9 @@
 
             <StackLayout
                 x:Name="tagsStackLayout"
-                Grid.Row="4"
-                Grid.ColumnSpan="2"
-                Margin="5">
-
-                <!--<HorizontalStackLayout>
-                    <Label
-                        Margin="5"
-                        FontSize="20"
-                        Text="TEST"
-                        VerticalOptions="Center" />
-                    <Button
-                        Margin="5"
-                        FontFamily="MaterialIcons"
-                        FontSize="20"
-                        Text="content_copy" />
-                </HorizontalStackLayout>
-
-                <Editor
-                    Margin="5"
-                    HeightRequest="80"
-                    Text="#test" />-->
-
-            </StackLayout>
+                Grid.Row="5"
+                Grid.ColumnSpan="3"
+                Margin="5" />
         </Grid>
     </ScrollView>
 
