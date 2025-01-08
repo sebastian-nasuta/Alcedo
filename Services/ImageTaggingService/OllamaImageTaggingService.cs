@@ -82,9 +82,47 @@ internal partial class OllamaImageTaggingService : IImageTaggingService
         }
     }
 
-    public Task<string> TestImageRecognitionAsync(string base64Image)
+    public async Task<string> TestImageRecognitionAsync(string base64Image)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var userMessage = new
+            {
+                role = "user",
+                content = "what is in this image?",
+                images = new[] { base64Image }
+            };
+
+            var requestBody = new
+            {
+                model = "llama3.2-vision",
+                messages = new[] { userMessage }
+            };
+
+            var serializedRequestBody = JsonSerializer.Serialize(requestBody);
+
+            using var client = new HttpClient();
+            var response = await client.PostAsync(
+                ollamaApiChatUrl,
+                new StringContent(serializedRequestBody, Encoding.UTF8, "application/json"));
+
+            response.EnsureSuccessStatusCode();
+
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            using var reader = new StreamReader(responseStream);
+
+            var responseContent = await reader.ReadToEndAsync();
+
+            var result = JsonSerializer.Deserialize<OllamaResponse>(responseContent)
+                ?? throw new Exception("An error occurred while deserializing the tags. responseContent: " + responseContent);
+
+            return result.Message.Content;
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            throw new Exception($"An error occurred while testing image recognition: {ex.Message}");
+        }
     }
 
     public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
