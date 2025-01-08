@@ -9,7 +9,6 @@ internal class OllamaService
     private static readonly string ollamaUrl = "http://192.168.0.81:11434";
     private static readonly string ollamaApiUrl = ollamaUrl + "/api";
     private static readonly string ollamaApiChatUrl = ollamaApiUrl + "/chat";
-    private static readonly string ollamaApiGenerateUrl = ollamaApiUrl + "/generate";
 
     internal static async Task<string> TestOllamaConnection()
     {
@@ -73,7 +72,7 @@ internal class OllamaService
             if (onPartialResponse is not null)
             {
                 throw new NotImplementedException("Code requires testing and debugging before being used.");
-
+                /*
                 char[] buffer = new char[1024];
                 int bytesRead;
                 while ((bytesRead = await reader.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -81,6 +80,7 @@ internal class OllamaService
                     var partialResponse = new string(buffer, 0, bytesRead);
                     onPartialResponse(partialResponse);
                 }
+                */
             }
 
             var responseContent = await reader.ReadToEndAsync();
