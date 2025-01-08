@@ -212,7 +212,5 @@ public partial class MainPage : ContentPage
         loadingIndicator.IsRunning = loadingIndicator.IsVisible = value;
     }
 
-    private string? GetCustomTag() => !string.IsNullOrWhiteSpace(customTagEntry.Text)
-            ? $"{(customTagEntry.Text.StartsWith('#') ? "" : "#")} {customTagEntry.Text}"
-            : null;
+    private string? GetCustomTag() => !string.IsNullOrWhiteSpace(customTagEntry.Text) ? customTagEntry.Text : null;
 }
