@@ -53,7 +53,7 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
         catch (Exception ex)
         {
             // Handle exceptions (e.g., log the error, show a message to the user)
-            throw new Exception($"An error occurred while recognizing the image: {ex.Message}");
+            throw new Exception($"An error occurred while testing image recognition: {ex.Message}");
         }
     }
 
