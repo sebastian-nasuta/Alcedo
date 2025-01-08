@@ -1,11 +1,15 @@
-﻿using OpenAI.Chat;
+﻿using Microsoft.Extensions.Configuration;
+using OpenAI.Chat;
 using System.Text.Json;
 
 namespace Alcedo.Services;
 
-internal class OpenAIImageTaggingService : IImageTaggingService
+internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageTaggingService
 {
-    private static readonly string apiKey = "";
+    private string? _apiKey;
+
+    private string ApiKey => _apiKey ??= configuration["OpenAI:ApiKey"]
+        ?? throw new ArgumentNullException("OpenAI:ApiKey is missing in the configuration file.");
 
     public Task<string> TestOllamaConnection()
     {
@@ -42,7 +46,7 @@ internal class OpenAIImageTaggingService : IImageTaggingService
 
             var model = "gpt-3.5-turbo";
             model = "gpt-4o";
-            var client = new ChatClient(model: model, apiKey: apiKey);
+            var client = new ChatClient(model, ApiKey);
 
             var systemMessage = BuildSystemMessage(tagsDictionary);
             var userMessage = new UserChatMessage(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));

@@ -1,5 +1,7 @@
 ﻿using Alcedo.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace Alcedo
 {
@@ -19,8 +21,17 @@ namespace Alcedo
                     fonts.AddFont("MaterialSymbolsSharp.ttf", "MSS");
                 });
 
-            //builder.Services.AddSingleton<IImageTaggingService, OpenAIImageTaggingService>();
-            builder.Services.AddSingleton<IImageTaggingService, OllamaImageTaggingService>();
+            using var stream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Alcedo.appsettings.json")
+                ?? throw new FileNotFoundException("appsettings.json not found in the resources.");
+
+            var config = new ConfigurationBuilder()
+                .AddJsonStream(stream)
+                .Build();
+
+            builder.Configuration.AddConfiguration(config);
+
+            builder.Services.AddSingleton<IImageTaggingService, OpenAIImageTaggingService>();
 
 #if DEBUG
             builder.Logging.AddDebug();
