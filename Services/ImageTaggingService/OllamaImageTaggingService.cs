@@ -82,6 +82,11 @@ internal partial class OllamaImageTaggingService : IImageTaggingService
         }
     }
 
+    public Task<string> TestImageRecognitionAsync(string base64Image)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try

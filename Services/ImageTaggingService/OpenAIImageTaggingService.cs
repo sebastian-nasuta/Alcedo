@@ -30,6 +30,33 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
 
     public Task<string> GetTagDescriptionAsync(string tag) => throw new NotImplementedException();
 
+    public async Task<string> TestImageRecognitionAsync(string base64Image)
+    {
+        try
+        {
+            var client = new ChatClient(GPTModels.gpt_4o, ApiKey);
+
+            var userMessage = new UserChatMessage([
+                ChatMessageContentPart.CreateTextPart("What is in this image?"),
+                ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}"))
+            ]);
+
+            var completion = await client.CompleteChatAsync(
+                [userMessage],
+                new ChatCompletionOptions()
+                {
+                    ResponseFormat = ChatResponseFormat.CreateTextFormat()
+                });
+
+            return completion.Value.Content[0].Text;
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            throw new Exception($"An error occurred while recognizing the image: {ex.Message}");
+        }
+    }
+
     public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try
@@ -55,9 +82,7 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
                     ]);
             }
 
-            var model = "gpt-3.5-turbo";
-            model = "gpt-4o";
-            var client = new ChatClient(model, ApiKey);
+            var client = new ChatClient(GPTModels.gpt_4o, ApiKey);
 
             var systemMessage = BuildSystemMessage(tagsDictionary);
             var userMessage = new UserChatMessage(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
@@ -153,5 +178,11 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
             """));
 
         return new SystemChatMessage(chatMessageParts);
+    }
+
+    private class GPTModels
+    {
+        public const string gpt_3_5_turbo = "gpt-3.5-turbo";
+        public const string gpt_4o = "gpt-4o";
     }
 }

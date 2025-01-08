@@ -33,6 +33,7 @@ namespace Alcedo
             builder.Configuration.AddConfiguration(config);
 
             builder.Services.AddSingleton<IImageTaggingService, OpenAIImageTaggingService>();
+            //builder.Services.AddSingleton<IImageTaggingService, OllamaImageTaggingService>();
 
 #if DEBUG
             builder.Logging.AddDebug();

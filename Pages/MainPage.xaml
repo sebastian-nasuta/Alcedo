@@ -41,16 +41,15 @@
                 Text="photo_camera" />
 
             <Button
-                x:Name="clearImageBtn"
+                x:Name="TestBtn"
                 Grid.Row="1"
                 Grid.Column="2"
                 Margin="5"
-                Clicked="OnClearImageClickedAsync"
+                Clicked="OnTestClickedAsync"
                 FontFamily="MSO"
                 FontSize="60"
                 HorizontalOptions="Fill"
-                IsVisible="{Binding IsImageLoaded}"
-                Text="hide_image" />
+                Text="labs" />
 
             <Image
                 x:Name="loadedImage"
@@ -83,6 +82,18 @@
                 HorizontalOptions="Fill"
                 IsVisible="{Binding IsImageLoaded}"
                 Text="content_copy" />
+
+            <Button
+                x:Name="clearImageBtn"
+                Grid.Row="3"
+                Grid.Column="2"
+                Margin="5"
+                Clicked="OnClearImageClickedAsync"
+                FontFamily="MSO"
+                FontSize="60"
+                HorizontalOptions="Fill"
+                IsVisible="{Binding IsImageLoaded}"
+                Text="hide_image" />
 
             <ActivityIndicator
                 x:Name="loadingIndicator"

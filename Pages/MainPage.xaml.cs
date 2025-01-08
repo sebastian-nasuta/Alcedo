@@ -28,7 +28,7 @@ public partial class MainPage : ContentPage
         BindingContext = this;
     }
 
-    private async void OnLoadImageClickedAsync(object sender, EventArgs e)
+    protected async void OnLoadImageClickedAsync(object sender, EventArgs e)
     {
         try
         {
@@ -51,28 +51,11 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnClearImageClickedAsync(object sender, EventArgs e)
+    protected async void OnTakePhotoClickedAsync(object sender, EventArgs e)
     {
         try
         {
             ToggleLoadingIndicator(true);
-            SetImageSource(null);
-            await Task.CompletedTask;
-        }
-        finally
-        {
-            ToggleLoadingIndicator(false);
-        }
-    }
-
-    private async void OnTakePhotoClickedAsync(object sender, EventArgs e)
-    {
-        try
-        {
-            ToggleLoadingIndicator(true);
-
-            await DisplayAlert("Connection Test", await _imageTaggingService.TestConnectionAsync(), "OK");
-            return;
 
             var customTag = GetCustomTag();
             var tagDescription = string.IsNullOrWhiteSpace(customTag)
@@ -97,7 +80,33 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnGenerateTagsClickedAsync(object sender, EventArgs e)
+    protected async void OnTestClickedAsync(object sender, EventArgs e)
+    {
+        try
+        {
+            if (loadedImage.Source is null)
+            {
+                await DisplayAlert("Error", "Please load an image first", "OK");
+                return;
+            }
+
+            ToggleLoadingIndicator(true);
+
+            var response = await _imageTaggingService.TestImageRecognitionAsync(Base64Image);
+            await DisplayAlert("Test Result", response, "OK");
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            await DisplayAlert("Error", $"An error occurred while testing: {ex.Message}", "OK");
+        }
+        finally
+        {
+            ToggleLoadingIndicator(false);
+        }
+    }
+
+    protected async void OnGenerateTagsClickedAsync(object sender, EventArgs e)
     {
         try
         {
@@ -129,7 +138,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnCopyAllTagsClickedAsync(object sender, EventArgs e)
+    protected async void OnCopyAllTagsClickedAsync(object sender, EventArgs e)
     {
         try
         {
@@ -140,6 +149,20 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"An error occurred while copying tags: {ex.Message}", "OK");
+        }
+    }
+
+    protected async void OnClearImageClickedAsync(object sender, EventArgs e)
+    {
+        try
+        {
+            ToggleLoadingIndicator(true);
+            SetImageSource(null);
+            await Task.CompletedTask;
+        }
+        finally
+        {
+            ToggleLoadingIndicator(false);
         }
     }
 
