@@ -1,18 +1,22 @@
 ﻿using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Alcedo.Services;
 
 internal class OllamaService
 {
-    private static readonly string apiUrl = "http://192.168.0.81:11434/api/chat";
+    private static readonly string ollamaUrl = "http://192.168.0.81:11434";
+    private static readonly string ollamaApiUrl = ollamaUrl + "/api";
+    private static readonly string ollamaApiChatUrl = ollamaApiUrl + "/chat";
+    private static readonly string ollamaApiGenerateUrl = ollamaApiUrl + "/generate";
 
     internal static async Task<string> TestOllamaConnection()
     {
         try
         {
             using var client = new HttpClient();
-            var response = await client.GetAsync("http://192.168.0.81:11434");
+            var response = await client.GetAsync(ollamaUrl);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
@@ -27,8 +31,25 @@ internal class OllamaService
     {
         try
         {
-            var systemMessage = BuildSystemMessage();
-            var userMessage = BuildUserMessage(tag);
+            var systemMessage = new
+            {
+                role = "system",
+                content = """
+                    You are an assistant that generates description for tag given by user.
+            
+                    ~TASKS~
+                    - Generate 3 sentences that describe this tag.
+            
+                    ~RULES~
+                    - Return only this 3 sentences in numbered list.
+                    """
+            };
+
+            var userMessage = new
+            {
+                role = "user",
+                content = tag
+            };
 
             var requestBody = new
             {
@@ -41,7 +62,7 @@ internal class OllamaService
 
             using var client = new HttpClient();
             var response = await client.PostAsync(
-                apiUrl,
+                ollamaApiChatUrl,
                 new StringContent(serializedRequestBody, Encoding.UTF8, "application/json"));
 
             response.EnsureSuccessStatusCode();
@@ -51,6 +72,8 @@ internal class OllamaService
 
             if (onPartialResponse is not null)
             {
+                throw new NotImplementedException("Code requires testing and debugging before being used.");
+
                 char[] buffer = new char[1024];
                 int bytesRead;
                 while ((bytesRead = await reader.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -61,7 +84,10 @@ internal class OllamaService
             }
 
             var responseContent = await reader.ReadToEndAsync();
-            return responseContent;
+
+            var result = JsonSerializer.Deserialize<OllamaResponse>(responseContent);
+
+            return result?.Message.Content ?? string.Empty;
         }
         catch (Exception ex)
         {
@@ -70,17 +96,15 @@ internal class OllamaService
         }
     }
 
-    private static object BuildSystemMessage()
-        => new { role = "system", content = """
-            You are an assistant that generates description for tag given by user.
-            
-            ~TASKS~
-            - Generate 3 sentences that describe this tag.
-            
-            ~RULES~
-            - Return only this 3 sentences in numbered list.
-            """ };
+    private class OllamaResponse
+    {
+        [JsonPropertyName("message")]
+        public MessageModel Message { get; set; } = null!;
 
-    private static object BuildUserMessage(string tag)
-        => new { role = "user", content = tag };
+        public class MessageModel
+        {
+            [JsonPropertyName("content")]
+            public string Content { get; set; } = null!;
+        }
+    }
 }
