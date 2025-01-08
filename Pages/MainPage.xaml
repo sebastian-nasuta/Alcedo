@@ -11,12 +11,12 @@
             RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 
             <Entry
-                x:Name="inktoberThemeEntry"
+                x:Name="customTagEntry"
                 Grid.Row="0"
                 Grid.ColumnSpan="3"
                 Margin="5"
                 HorizontalOptions="Fill"
-                Placeholder="Enter inktober theme" />
+                Placeholder="Enter custom tag" />
 
             <Button
                 x:Name="loadImageBtn"

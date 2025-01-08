@@ -95,8 +95,7 @@ public partial class MainPage : ContentPage
 
             ToggleLoadingIndicator(true);
 
-            var inktoberTheme = inktoberThemeEntry.Text;
-            var groupedTags = await ComputerVisionService.GetTagsAsync(Base64Image, inktoberTheme);
+            var groupedTags = await ComputerVisionService.GetTagsAsync(Base64Image, GetCustomTag());
 
             tagsStackLayout.Children.Clear();
 
@@ -212,4 +211,8 @@ public partial class MainPage : ContentPage
     {
         loadingIndicator.IsRunning = loadingIndicator.IsVisible = value;
     }
+
+    private string? GetCustomTag() => !string.IsNullOrWhiteSpace(customTagEntry.Text)
+            ? $"{(customTagEntry.Text.StartsWith('#') ? "" : "#")} {customTagEntry.Text}"
+            : null;
 }

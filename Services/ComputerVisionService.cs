@@ -10,25 +10,25 @@ internal class ComputerVisionService
     /// <summary>
     /// This method generates tags that describe the image from the base64Image parameter.
     /// </summary>
-    internal static async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? inktoberTheme = null)
+    internal static async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try
         {
             var tagsDictionary = new Dictionary<string, string[]>();
-            if (!string.IsNullOrWhiteSpace(inktoberTheme))
+            if (!string.IsNullOrWhiteSpace(customTag))
             {
-                inktoberTheme = inktoberTheme.Trim();
+                customTag = customTag.Trim();
 
                 tagsDictionary.Add(
                     "inktober",
                     [
-                        inktoberTheme,
+                        customTag,
                         "inktober",
-                        "inktober" + inktoberTheme,
+                        "inktober" + customTag,
                         "inktober" + DateTime.UtcNow.Year,
-                        "inktober" + DateTime.UtcNow.Year + inktoberTheme,
+                        "inktober" + DateTime.UtcNow.Year + customTag,
                         "inktober52",
-                        "inktober52" + inktoberTheme,
+                        "inktober52" + customTag,
                         "ink",
                         "drawing",
                         "blackAndWhite"
