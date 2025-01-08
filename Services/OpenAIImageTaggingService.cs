@@ -11,14 +11,23 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
     private string ApiKey => _apiKey ??= configuration["OpenAI:ApiKey"]
         ?? throw new ArgumentNullException("OpenAI:ApiKey is missing in the configuration file.");
 
-    public Task<string> TestOllamaConnection()
+    public async Task<string> TestConnectionAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
+            var response = await client.GetAsync("https://api.openai.com/v1/models");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            throw new Exception($"An error occurred while testing the OpenAI connection: {ex.Message}");
+        }
     }
 
-    /// <summary>
-    /// This method generates tags that describe the image from the base64Image parameter.
-    /// </summary>
     public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try

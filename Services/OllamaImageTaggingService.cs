@@ -10,7 +10,7 @@ internal class OllamaImageTaggingService : IImageTaggingService
     private static readonly string ollamaApiUrl = ollamaUrl + "/api";
     private static readonly string ollamaApiChatUrl = ollamaApiUrl + "/chat";
 
-    public async Task<string> TestOllamaConnection()
+    public async Task<string> TestConnectionAsync()
     {
         try
         {
