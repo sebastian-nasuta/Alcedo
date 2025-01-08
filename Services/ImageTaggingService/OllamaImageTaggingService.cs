@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Alcedo.Services;
+namespace Alcedo.Services.ImageTaggingService;
 
 internal class OllamaImageTaggingService : IImageTaggingService
 {

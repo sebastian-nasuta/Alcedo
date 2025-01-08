@@ -1,4 +1,4 @@
-﻿namespace Alcedo.Services;
+﻿namespace Alcedo.Services.SettingsService;
 
 internal class SettingsService
 {

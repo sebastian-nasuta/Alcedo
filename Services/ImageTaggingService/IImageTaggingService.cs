@@ -1,5 +1,5 @@
 ﻿
-namespace Alcedo.Services
+namespace Alcedo.Services.ImageTaggingService
 {
     public interface IImageTaggingService
     {

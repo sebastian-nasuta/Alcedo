@@ -2,7 +2,7 @@
 using OpenAI.Chat;
 using System.Text.Json;
 
-namespace Alcedo.Services;
+namespace Alcedo.Services.ImageTaggingService;
 
 internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageTaggingService
 {

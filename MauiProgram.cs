@@ -1,4 +1,5 @@
-﻿using Alcedo.Services;
+﻿using Alcedo.Services.ImageTaggingService;
+using Alcedo.Services.SettingsService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
