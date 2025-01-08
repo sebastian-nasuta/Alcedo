@@ -31,7 +31,7 @@ internal class OllamaImageTaggingService : IImageTaggingService
         throw new NotImplementedException();
     }
 
-    public async Task<string> GetTagDescriptionAsync(string tag, Action<string>? onPartialResponse = null)
+    public async Task<string> GetTagDescriptionAsync(string tag)
     {
         try
         {
@@ -59,7 +59,7 @@ internal class OllamaImageTaggingService : IImageTaggingService
             {
                 model = "llama3.2",
                 messages = new[] { systemMessage, userMessage },
-                stream = onPartialResponse is not null
+                stream = false
             };
 
             var serializedRequestBody = JsonSerializer.Serialize(requestBody);
@@ -73,20 +73,6 @@ internal class OllamaImageTaggingService : IImageTaggingService
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
             using var reader = new StreamReader(responseStream);
-
-            if (onPartialResponse is not null)
-            {
-                throw new NotImplementedException("Code requires testing and debugging before being used.");
-                /*
-                char[] buffer = new char[1024];
-                int bytesRead;
-                while ((bytesRead = await reader.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                {
-                    var partialResponse = new string(buffer, 0, bytesRead);
-                    onPartialResponse(partialResponse);
-                }
-                */
-            }
 
             var responseContent = await reader.ReadToEndAsync();
 

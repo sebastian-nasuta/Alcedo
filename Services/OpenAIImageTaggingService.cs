@@ -28,6 +28,8 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
         }
     }
 
+    public Task<string> GetTagDescriptionAsync(string tag) => throw new NotImplementedException();
+
     public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try
@@ -86,11 +88,6 @@ internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageT
             // Handle exceptions (e.g., log the error, show a message to the user)
             throw new Exception($"An error occurred while generating tags: {ex.Message}");
         }
-    }
-
-    public Task<string> GetTagDescriptionAsync(string tag, Action<string>? onPartialResponse)
-    {
-        throw new NotImplementedException();
     }
 
     private static SystemChatMessage BuildSystemMessage(Dictionary<string, string[]> tagsDictionary)
