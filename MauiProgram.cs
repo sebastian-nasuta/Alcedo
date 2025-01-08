@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Alcedo.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Alcedo
 {
@@ -18,8 +19,11 @@ namespace Alcedo
                     fonts.AddFont("MaterialSymbolsSharp.ttf", "MSS");
                 });
 
+            //builder.Services.AddSingleton<IImageTaggingService, OpenAIImageTaggingService>();
+            builder.Services.AddSingleton<IImageTaggingService, OllamaImageTaggingService>();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

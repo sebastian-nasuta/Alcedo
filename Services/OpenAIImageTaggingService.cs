@@ -3,14 +3,19 @@ using System.Text.Json;
 
 namespace Alcedo.Services;
 
-internal class ComputerVisionService
+internal class OpenAIImageTaggingService : IImageTaggingService
 {
     private static readonly string apiKey = "";
+
+    public Task<string> TestOllamaConnection()
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// This method generates tags that describe the image from the base64Image parameter.
     /// </summary>
-    internal static async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
+    public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try
         {
@@ -40,7 +45,7 @@ internal class ComputerVisionService
             var client = new ChatClient(model: model, apiKey: apiKey);
 
             var systemMessage = BuildSystemMessage(tagsDictionary);
-            var userMessage = BuildUserMessage(base64Image);
+            var userMessage = new UserChatMessage(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
 
             var completion = await client.CompleteChatAsync(
                 [systemMessage, userMessage],
@@ -48,7 +53,7 @@ internal class ComputerVisionService
                 {
                     ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat()
                 });
-            
+
             var tags = completion.Value.Content[0].Text;
 
             var deserializedTags = JsonSerializer.Deserialize<Dictionary<string, string[]>>(tags)
@@ -68,6 +73,11 @@ internal class ComputerVisionService
             // Handle exceptions (e.g., log the error, show a message to the user)
             throw new Exception($"An error occurred while generating tags: {ex.Message}");
         }
+    }
+
+    public Task<string> GetTagDescriptionAsync(string tag, Action<string>? onPartialResponse)
+    {
+        throw new NotImplementedException();
     }
 
     private static SystemChatMessage BuildSystemMessage(Dictionary<string, string[]> tagsDictionary)
@@ -101,40 +111,37 @@ internal class ComputerVisionService
         }
 
         chatMessageParts.Add(ChatMessageContentPart.CreateTextPart("""
-                ~EXAMPLE~
-                {
-                  "general": [
-                    "sunset",
-                    "ocean",
-                    "waves",
-                    "beach",
-                    "palmTrees",
-                    "silhouette",
-                    "sky",
-                    "clouds",
-                    "scenic",
-                    "horizon"
-                  ],
-                  "style": [
-                    "realistic",
-                    "vibrant",
-                    "colorful",
-                    "detailed",
-                    "naturalistic"
-                  ],
-                  "technique": [
-                    "oilPainting",
-                    "brushStrokes",
-                    "layering",
-                    "blending",
-                    "impasto"
-                  ]
-                }
+            ~EXAMPLE~
+            {
+              "general": [
+                "sunset",
+                "ocean",
+                "waves",
+                "beach",
+                "palmTrees",
+                "silhouette",
+                "sky",
+                "clouds",
+                "scenic",
+                "horizon"
+              ],
+              "style": [
+                "realistic",
+                "vibrant",
+                "colorful",
+                "detailed",
+                "naturalistic"
+              ],
+              "technique": [
+                "oilPainting",
+                "brushStrokes",
+                "layering",
+                "blending",
+                "impasto"
+              ]
+            }
             """));
 
         return new SystemChatMessage(chatMessageParts);
     }
-
-    private static UserChatMessage BuildUserMessage(string base64Image)
-        => new(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
 }

@@ -7,6 +7,7 @@ namespace Alcedo.Pages;
 public partial class MainPage : ContentPage
 {
     private bool _isImageLoaded;
+    private readonly IImageTaggingService _imageTaggingService;
 
     public bool IsImageLoaded
     {
@@ -20,8 +21,9 @@ public partial class MainPage : ContentPage
 
     public string Base64Image { get; private set; } = string.Empty;
 
-    public MainPage()
+    public MainPage(IImageTaggingService imageTaggingService)
     {
+        _imageTaggingService = imageTaggingService;
         InitializeComponent();
         BindingContext = this;
     }
@@ -95,7 +97,7 @@ public partial class MainPage : ContentPage
 
             ToggleLoadingIndicator(true);
 
-            var groupedTags = await ComputerVisionService.GetTagsAsync(Base64Image, GetCustomTag());
+            var groupedTags = await _imageTaggingService.GetTagsAsync(Base64Image, GetCustomTag());
 
             tagsStackLayout.Children.Clear();
 

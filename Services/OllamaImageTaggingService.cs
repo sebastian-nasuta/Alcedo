@@ -4,13 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace Alcedo.Services;
 
-internal class OllamaService
+internal class OllamaImageTaggingService : IImageTaggingService
 {
     private static readonly string ollamaUrl = "http://192.168.0.81:11434";
     private static readonly string ollamaApiUrl = ollamaUrl + "/api";
     private static readonly string ollamaApiChatUrl = ollamaApiUrl + "/chat";
 
-    internal static async Task<string> TestOllamaConnection()
+    public async Task<string> TestOllamaConnection()
     {
         try
         {
@@ -26,7 +26,12 @@ internal class OllamaService
         }
     }
 
-    internal static async Task<string> GetTagDescriptionAsync(string tag, Action<string>? onPartialResponse = null)
+    public Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<string> GetTagDescriptionAsync(string tag, Action<string>? onPartialResponse = null)
     {
         try
         {
