@@ -10,9 +10,4 @@ The main features of Alcedo include:
 - Generating descriptive tags for images using OpenAI's GPT model.
 - Copying generated tags to the clipboard for easy use.
 
-The project is structured into several key components:
-- **MainPage.xaml**: Defines the user interface for the main page of the application.
-- **MainPage.xaml.cs**: Contains the code-behind for the main page, handling user interactions and image processing.
-- **ComputerVisionService.cs**: Interacts with the OpenAI API to generate tags for images.
-
 Alcedo aims to simplify the process of generating and managing tags for images, making it easier for users to enhance their social media posts or organize their image collections.
