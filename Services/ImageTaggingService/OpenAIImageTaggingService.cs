@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Alcedo.Services.SettingsService;
 using OpenAI.Chat;
 using System.Text.Json;
 
 namespace Alcedo.Services.ImageTaggingService;
 
-internal class OpenAIImageTaggingService(IConfiguration configuration) : IImageTaggingService
+internal class OpenAIImageTaggingService(ISettingsService settingsService) : IImageTaggingService
 {
-    private string? _apiKey;
-
-    private string ApiKey => _apiKey ??= configuration["OpenAI:ApiKey"]
-        ?? throw new ArgumentNullException("OpenAI:ApiKey is missing in the configuration file.");
+    private string ApiKey => settingsService.LoadApiKey();
 
     public async Task<string> TestConnectionAsync()
     {

@@ -1,4 +1,5 @@
 ﻿using Alcedo.Services.ImageTaggingService;
+using Alcedo.Services.SettingsService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -31,6 +32,7 @@ namespace Alcedo
 
             builder.Configuration.AddConfiguration(config);
 
+            builder.Services.AddSingleton<ISettingsService, SettingsService>();
             builder.Services.AddSingleton<IImageTaggingService, OpenAIImageTaggingService>();
             //builder.Services.AddSingleton<IImageTaggingService, OllamaImageTaggingService>();
 

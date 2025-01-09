@@ -4,15 +4,19 @@ namespace Alcedo.Pages;
 
 public partial class SettingsPage : ContentPage
 {
-    public SettingsPage()
+    private readonly ISettingsService _settingsService;
+
+    public SettingsPage(ISettingsService settingsService)
     {
+        _settingsService = settingsService;
         InitializeComponent();
         SetCurrentTheme();
+        LoadApiKey();
     }
 
     private void SetCurrentTheme()
     {
-        var currentTheme = SettingsService.LoadUserAppTheme();
+        var currentTheme = _settingsService.LoadUserAppTheme();
 
         switch (currentTheme)
         {
@@ -32,7 +36,17 @@ public partial class SettingsPage : ContentPage
     {
         if (sender is RadioButton radioButton)
         {
-            SettingsService.SetAppTheme(radioButton.Value.ToString());
+            _settingsService.SetAppTheme(radioButton.Value.ToString());
         }
+    }
+
+    private void LoadApiKey()
+    {
+        apiKeyEntry.Text = _settingsService.LoadApiKey();
+    }
+
+    private void OnApiKeyChanged(object sender, TextChangedEventArgs e)
+    {
+        _settingsService.SaveApiKey(e.NewTextValue);
     }
 }

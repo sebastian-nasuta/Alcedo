@@ -45,6 +45,14 @@
                     Value="Light" />
             </Grid>
 
+            <Label
+                FontAttributes="Bold"
+                Text="OpenAI API Key:" />
+            <Entry
+                x:Name="apiKeyEntry"
+                Placeholder="Enter OpenAI API Key"
+                TextChanged="OnApiKeyChanged" />
+
         </VerticalStackLayout>
     </ScrollView>
 
