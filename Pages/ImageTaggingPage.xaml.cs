@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Alcedo.Pages;
 
-public partial class MainPage : ContentPage
+public partial class ImageTaggingPage : ContentPage
 {
     private bool _isImageLoaded;
     private readonly IImageTaggingService _imageTaggingService;
@@ -20,7 +20,7 @@ public partial class MainPage : ContentPage
 
     public string Base64Image { get; private set; } = string.Empty;
 
-    public MainPage(IImageTaggingService imageTaggingService)
+    public ImageTaggingPage(IImageTaggingService imageTaggingService)
     {
         _imageTaggingService = imageTaggingService;
         InitializeComponent();
@@ -62,32 +62,6 @@ public partial class MainPage : ContentPage
         {
             // Handle exceptions (e.g., log the error, show a message to the user)
             await DisplayAlert("Error", $"An error occurred while taking the photo: {ex.Message}", "OK");
-        }
-        finally
-        {
-            ToggleLoadingIndicator(false);
-        }
-    }
-
-    protected async void OnTestClickedAsync(object sender, EventArgs e)
-    {
-        try
-        {
-            if (loadedImage.Source is null)
-            {
-                await DisplayAlert("Error", "Please load an image first", "OK");
-                return;
-            }
-
-            ToggleLoadingIndicator(true);
-
-            var response = await _imageTaggingService.TestImageRecognitionAsync(Base64Image);
-            await DisplayAlert("Test Result", response, "OK");
-        }
-        catch (Exception ex)
-        {
-            // Handle exceptions (e.g., log the error, show a message to the user)
-            await DisplayAlert("Error", $"An error occurred while testing: {ex.Message}", "OK");
         }
         finally
         {

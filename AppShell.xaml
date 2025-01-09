@@ -5,13 +5,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Alcedo"
     xmlns:pages="clr-namespace:Alcedo.Pages"
-    Shell.FlyoutBehavior="Flyout"
-    Title="Alcedo">
+    Title="Alcedo"
+    Shell.FlyoutBehavior="Flyout">
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate pages:MainPage}"
-        Route="MainPage" />
+        Title="Image tag generator"
+        ContentTemplate="{DataTemplate pages:ImageTaggingPage}"
+        Route="ImageTaggingPage" />
 
     <ShellContent
         Title="Settings"
