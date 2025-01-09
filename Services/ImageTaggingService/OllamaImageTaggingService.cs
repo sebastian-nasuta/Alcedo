@@ -1,20 +1,24 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using System.Text;
 using System.Text.Json;
 
 namespace Alcedo.Services.ImageTaggingService;
 
-internal partial class OllamaImageTaggingService : IImageTaggingService
+internal partial class OllamaImageTaggingService(IConfiguration configuration) : IImageTaggingService
 {
-    private static readonly string ollamaUrl = "http://192.168.0.81:11434";
-    private static readonly string ollamaApiUrl = ollamaUrl + "/api";
-    private static readonly string ollamaApiChatUrl = ollamaApiUrl + "/chat";
+    private string? _ollamaUrl;
+    private string OllamaUrl => _ollamaUrl ??= configuration["Ollama:Url"]
+        ?? throw new ArgumentNullException("Ollama:Url is missing in the configuration file.");
+
+    private string OllamaApiUrl => OllamaUrl + "/api";
+    private string OllamaApiChatUrl => OllamaApiUrl + "/chat";
 
     public async Task<string> TestConnectionAsync()
     {
         try
         {
             using var client = new HttpClient();
-            var response = await client.GetAsync(ollamaUrl);
+            var response = await client.GetAsync(OllamaUrl);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
@@ -60,7 +64,7 @@ internal partial class OllamaImageTaggingService : IImageTaggingService
 
             using var client = new HttpClient();
             var response = await client.PostAsync(
-                ollamaApiChatUrl,
+                OllamaApiChatUrl,
                 new StringContent(serializedRequestBody, Encoding.UTF8, "application/json"));
 
             response.EnsureSuccessStatusCode();
@@ -103,7 +107,7 @@ internal partial class OllamaImageTaggingService : IImageTaggingService
 
             using var client = new HttpClient();
             var response = await client.PostAsync(
-                ollamaApiChatUrl,
+                OllamaApiChatUrl,
                 new StringContent(serializedRequestBody, Encoding.UTF8, "application/json"));
 
             response.EnsureSuccessStatusCode();
@@ -168,7 +172,7 @@ internal partial class OllamaImageTaggingService : IImageTaggingService
 
             using var client = new HttpClient();
             var response = await client.PostAsync(
-                ollamaApiChatUrl,
+                OllamaApiChatUrl,
                 new StringContent(serializedRequestBody, Encoding.UTF8, "application/json"));
 
             response.EnsureSuccessStatusCode();
