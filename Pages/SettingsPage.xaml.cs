@@ -42,7 +42,7 @@ public partial class SettingsPage : ContentPage
 
     private void LoadApiKey()
     {
-        apiKeyEntry.Text = _settingsService.LoadApiKey();
+        apiKeyEditor.Text = _settingsService.LoadApiKey();
     }
 
     private void OnApiKeyChanged(object sender, TextChangedEventArgs e)
