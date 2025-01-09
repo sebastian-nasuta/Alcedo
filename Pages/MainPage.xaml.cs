@@ -1,5 +1,4 @@
-﻿
-using Alcedo.Services.ImageTaggingService;
+﻿using Alcedo.Services.ImageTaggingService;
 using SkiaSharp;
 
 namespace Alcedo.Pages;
