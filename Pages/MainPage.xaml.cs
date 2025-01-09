@@ -55,16 +55,6 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            ToggleLoadingIndicator(true);
-
-            var customTag = GetCustomTag();
-            var tagDescription = string.IsNullOrWhiteSpace(customTag)
-                ? "Enter a custom tag to get a description."
-                : await _imageTaggingService.GetTagDescriptionAsync($"{(customTag.StartsWith('#') ? "" : "#")} {customTag}");
-            await DisplayAlert("Tag Description", tagDescription, "OK");
-
-            return;
-
             var result = await MediaPicker.CapturePhotoAsync();
 
             await LoadAndCompressImageAsync(result);
