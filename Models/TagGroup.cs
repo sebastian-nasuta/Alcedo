@@ -1,4 +1,4 @@
-﻿namespace Alcedo.ViewModels;
+﻿namespace Alcedo.Models;
 
 public class TagGroup
 {

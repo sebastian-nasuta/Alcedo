@@ -1,4 +1,5 @@
-﻿using Alcedo.Services.ImageTaggingService;
+﻿using Alcedo.Models;
+using Alcedo.Services.ImageTaggingService;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

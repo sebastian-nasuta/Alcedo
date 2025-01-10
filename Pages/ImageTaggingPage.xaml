@@ -3,9 +3,10 @@
     x:Class="Alcedo.Pages.ImageTaggingPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:Alcedo.ViewModels"
     xmlns:converters="clr-namespace:Alcedo.Converters"
-    x:DataType="local:ImageTaggingViewModel">
+    xmlns:models="clr-namespace:Alcedo.Models"
+    xmlns:viewModels="clr-namespace:Alcedo.ViewModels"
+    x:DataType="viewModels:ImageTaggingViewModel">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -111,7 +112,7 @@
                 Margin="5"
                 ItemsSource="{Binding TagGroups}">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:TagGroup">
+                    <DataTemplate x:DataType="models:TagGroup">
                         <StackLayout>
                             <Label
                                 Margin="5"
