@@ -4,33 +4,22 @@ using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 
 namespace Alcedo.ViewModels;
 
 internal partial class ImageTaggingViewModel : INotifyPropertyChanged
 {
     private readonly IImageTaggingService _imageTaggingService;
+
     private bool _isImageLoaded;
-    private string _base64Image = string.Empty;
-    private ImageSource? _loadedImageSource;
     private bool _isLoading;
-    private ObservableCollection<TagGroup> _tagGroups = [];
+
+    private string _base64Image = string.Empty;
     private string? _customTag;
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private ImageSource? _loadedImageSource;
+    private ObservableCollection<TagGroup> _tagGroups = [];
 
-    public ImageSource? LoadedImageSource
-    {
-        get => _loadedImageSource;
-        set
-        {
-            _loadedImageSource = value;
-            IsImageLoaded = value != null;
-            TagGroups.Clear();
-            OnPropertyChanged();
-        }
-    }
 
     public bool IsImageLoaded
     {
@@ -62,16 +51,6 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<TagGroup> TagGroups
-    {
-        get => _tagGroups;
-        set
-        {
-            _tagGroups = value;
-            OnPropertyChanged();
-        }
-    }
-
     public string? CustomTag
     {
         get => !string.IsNullOrWhiteSpace(_customTag) ? _customTag : null;
@@ -82,11 +61,35 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         }
     }
 
+    public ImageSource? LoadedImageSource
+    {
+        get => _loadedImageSource;
+        set
+        {
+            _loadedImageSource = value;
+            IsImageLoaded = value != null;
+            TagGroups.Clear();
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<TagGroup> TagGroups
+    {
+        get => _tagGroups;
+        set
+        {
+            _tagGroups = value;
+            OnPropertyChanged();
+        }
+    }
+
     public Command LoadImageCommand { get; }
     public Command TakePhotoCommand { get; }
     public Command GenerateTagsCommand { get; }
     public Command CopyAllTagsCommand { get; }
     public Command ClearImageCommand { get; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public ImageTaggingViewModel(IImageTaggingService imageTaggingService)
     {
@@ -99,40 +102,17 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         ClearImageCommand = new Command(OnClearImageClicked);
     }
 
-    private async Task OnLoadImageClickedAsync()
+    private async Task OnCopyAllTagsClickedAsync()
     {
         try
         {
             IsLoading = true;
-            var result = await FilePicker.PickAsync(new()
-            {
-                FileTypes = FilePickerFileType.Images
-            });
-
-            await LoadAndCompressImageAsync(result);
+            var allTags = string.Join(" ", TagGroups.SelectMany(group => group.Tags.Select(tag => tag)));
+            await Clipboard.SetTextAsync(allTags);
         }
         catch (Exception ex)
         {
-            App.ShowExceptionAlert($"An error occurred while picking the file: {ex.Message}");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    private async Task OnTakePhotoClickedAsync()
-    {
-        try
-        {
-            IsLoading = true;
-            var result = await MediaPicker.CapturePhotoAsync();
-
-            await LoadAndCompressImageAsync(result);
-        }
-        catch (Exception ex)
-        {
-            App.ShowExceptionAlert($"An error occurred while taking the photo: {ex.Message}");
+            App.ShowExceptionAlert($"An error occurred while copying the tags: {ex.Message}");
         }
         finally
         {
@@ -173,17 +153,40 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         }
     }
 
-    private async Task OnCopyAllTagsClickedAsync()
+    private async Task OnLoadImageClickedAsync()
     {
         try
         {
             IsLoading = true;
-            var allTags = string.Join(" ", TagGroups.SelectMany(group => group.Tags.Select(tag => tag)));
-            await Clipboard.SetTextAsync(allTags);
+            var result = await FilePicker.PickAsync(new()
+            {
+                FileTypes = FilePickerFileType.Images
+            });
+
+            await LoadAndCompressImageAsync(result);
         }
         catch (Exception ex)
         {
-            App.ShowExceptionAlert($"An error occurred while copying the tags: {ex.Message}");
+            App.ShowExceptionAlert($"An error occurred while picking the file: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task OnTakePhotoClickedAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            var result = await MediaPicker.CapturePhotoAsync();
+
+            await LoadAndCompressImageAsync(result);
+        }
+        catch (Exception ex)
+        {
+            App.ShowExceptionAlert($"An error occurred while taking the photo: {ex.Message}");
         }
         finally
         {
@@ -243,12 +246,8 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
     }
 
     private void SetImageSource()
-    {
-        LoadedImageSource = string.IsNullOrEmpty(Base64Image) ? null : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
-    }
+        => LoadedImageSource = string.IsNullOrEmpty(Base64Image) ? null : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
 
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
