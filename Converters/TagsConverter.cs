@@ -8,7 +8,7 @@ public class TagsConverter : IValueConverter
     {
         if (value is List<string> tags)
         {
-            return string.Join(" ", tags.Select(tag => tag));
+            return string.Join(' ', tags.Select(tag => tag));
         }
         return string.Empty;
     }
@@ -18,10 +18,9 @@ public class TagsConverter : IValueConverter
         if (value is string tagString)
         {
             var tags = tagString.Split(' ')
-                                .Where(tag => !string.IsNullOrWhiteSpace(tag))
-                                .ToList();
+                                .Where(tag => !string.IsNullOrWhiteSpace(tag));
             return tags;
         }
-        return new List<string>();
+        return Enumerable.Empty<string>();
     }
 }

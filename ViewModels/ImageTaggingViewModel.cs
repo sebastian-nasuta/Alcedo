@@ -81,11 +81,11 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         }
     }
 
-    public ICommand LoadImageCommand { get; }
-    public ICommand TakePhotoCommand { get; }
-    public ICommand GenerateTagsCommand { get; }
-    public ICommand CopyAllTagsCommand { get; }
-    public ICommand ClearImageCommand { get; }
+    public Command LoadImageCommand { get; }
+    public Command TakePhotoCommand { get; }
+    public Command GenerateTagsCommand { get; }
+    public Command CopyAllTagsCommand { get; }
+    public Command ClearImageCommand { get; }
 
     public ImageTaggingViewModel(IImageTaggingService imageTaggingService)
     {
