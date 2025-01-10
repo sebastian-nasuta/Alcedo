@@ -4,30 +4,17 @@ using System.Text.Json;
 
 namespace Alcedo.Services.ImageTaggingService;
 
-internal class OpenAIImageTaggingService(ISettingsService settingsService) : IImageTaggingService
+internal class OpenAIImageTaggingService(ISettingsService settingsService) : ImageTaggingServiceBase
 {
     private string ApiKey => settingsService.LoadApiKey();
 
-    public async Task<string> TestConnectionAsync()
-    {
-        try
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
-            var response = await client.GetAsync("https://api.openai.com/v1/models");
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
-        }
-        catch (Exception ex)
-        {
-            // Handle exceptions (e.g., log the error, show a message to the user)
-            throw new Exception($"An error occurred while testing the OpenAI connection: {ex.Message}");
-        }
-    }
+    public override async Task<string> TestConnectionAsync()
+        => await TestConnectionAsync("https://api.openai.com/v1/models", ApiKey);
 
-    public Task<string> GetTagDescriptionAsync(string tag) => throw new NotImplementedException();
+    public override Task<string> GetTagDescriptionAsync(string tag)
+        => throw new NotImplementedException();
 
-    public async Task<string> TestImageRecognitionAsync(string base64Image)
+    public override async Task<string> TestImageRecognitionAsync(string base64Image)
     {
         try
         {
@@ -54,35 +41,15 @@ internal class OpenAIImageTaggingService(ISettingsService settingsService) : IIm
         }
     }
 
-    public async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
+    public override async Task<ILookup<string, string>> GetTagsAsync(string base64Image, string? customTag = null)
     {
         try
         {
-            var tagsDictionary = new Dictionary<string, string[]>();
-            if (!string.IsNullOrWhiteSpace(customTag))
-            {
-                customTag = customTag.Trim().TrimStart('#');
-
-                tagsDictionary.Add(
-                    "inktober",
-                    [
-                        "#" + customTag,
-                        "#inktober",
-                        "#inktober" + customTag,
-                        "#inktober" + DateTime.UtcNow.Year,
-                        "#inktober" + DateTime.UtcNow.Year + customTag,
-                        "#inktober52",
-                        "#inktober52" + customTag,
-                        "#ink",
-                        "#drawing",
-                    ]);
-            }
-
-            var client = new ChatClient(GPTModels.gpt_4o, ApiKey);
-
+            var tagsDictionary = GenerateInktoberTags(ref customTag);
             var systemMessage = BuildSystemMessage(tagsDictionary);
             var userMessage = new UserChatMessage(ChatMessageContentPart.CreateImagePart(new($"data:image/png;base64,{base64Image}")));
 
+            var client = new ChatClient(GPTModels.gpt_4o, ApiKey);
             var completion = await client.CompleteChatAsync(
                 [systemMessage, userMessage],
                 new ChatCompletionOptions()
@@ -113,65 +80,12 @@ internal class OpenAIImageTaggingService(ISettingsService settingsService) : IIm
 
     private static SystemChatMessage BuildSystemMessage(Dictionary<string, string[]> tagsDictionary)
     {
-        List<ChatMessageContentPart> chatMessageParts =
-        [
-            ChatMessageContentPart.CreateTextPart("You are an assistant that generates tags for Instagram images sent to you in base64 format."),
-            ChatMessageContentPart.CreateTextPart("""
-                ~TASKS~
-                1. Generate 10 tags that describe only the illustration, ignoring the style or technique.
-                2. Generate 5 tags to describe the style.
-                3. Generate 5 tags to describe the technique.
-                """),
-            ChatMessageContentPart.CreateTextPart("""
-                ~RULES~
-                - return only tags grouped in arrays named "general", "style" and "technique" in json format
-                - every tag should have prefix '#'
-                - all tags should consist of letters and numbers, without special characters
-                - if a tag consists of multiple words, use camelCase
-                """)
-        ];
-
-        if (tagsDictionary.Count != 0)
+        List<ChatMessageContentPart> chatMessageParts = [];
+        var instructionParts = GetTagGenerationInstructionParts(tagsDictionary);
+        foreach (var instructionPart in instructionParts)
         {
-            var existingTags = string.Join(", ", tagsDictionary.SelectMany(x => x.Value));
-            chatMessageParts.Add(ChatMessageContentPart.CreateTextPart($"""
-                ~EXISTING TAGS~
-                The following tags are already present and you can never generate any of them again:
-                {existingTags}
-                """));
+            chatMessageParts.Add(ChatMessageContentPart.CreateTextPart(instructionPart));
         }
-
-        chatMessageParts.Add(ChatMessageContentPart.CreateTextPart("""
-            ~EXAMPLE~
-            {
-              "general": [
-                "#sunset",
-                "#ocean",
-                "#waves",
-                "#beach",
-                "#palmTrees",
-                "#silhouette",
-                "#sky",
-                "#clouds",
-                "#scenic",
-                "#horizon"
-              ],
-              "style": [
-                "#realistic",
-                "#vibrant",
-                "#colorful",
-                "#detailed",
-                "#naturalistic"
-              ],
-              "technique": [
-                "#oilPainting",
-                "#brushStrokes",
-                "#layering",
-                "#blending",
-                "#impasto"
-              ]
-            }
-            """));
 
         return new SystemChatMessage(chatMessageParts);
     }
