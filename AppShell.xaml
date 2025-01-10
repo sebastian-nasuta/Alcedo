@@ -14,6 +14,11 @@
         Route="ImageTaggingPage" />
 
     <ShellContent
+        Title="Barcode scanner"
+        ContentTemplate="{DataTemplate pages:BarcodeScannerPage}"
+        Route="BarcodeScannerPage" />
+
+    <ShellContent
         Title="Settings"
         ContentTemplate="{DataTemplate pages:SettingsPage}"
         Route="SettingsPage" />
