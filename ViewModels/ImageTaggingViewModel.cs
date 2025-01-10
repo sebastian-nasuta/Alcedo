@@ -2,12 +2,10 @@
 using Alcedo.Services.ImageTaggingService;
 using SkiaSharp;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Alcedo.ViewModels;
 
-internal partial class ImageTaggingViewModel : INotifyPropertyChanged
+internal partial class ImageTaggingViewModel : ViewModelBase
 {
     private readonly IImageTaggingService _imageTaggingService;
 
@@ -88,8 +86,6 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
     public Command GenerateTagsCommand { get; }
     public Command CopyAllTagsCommand { get; }
     public Command ClearImageCommand { get; }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public ImageTaggingViewModel(IImageTaggingService imageTaggingService)
     {
@@ -247,7 +243,4 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
 
     private void SetImageSource()
         => LoadedImageSource = string.IsNullOrEmpty(Base64Image) ? null : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
-
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

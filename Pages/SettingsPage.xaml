@@ -2,7 +2,9 @@
 <ContentPage
     x:Class="Alcedo.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:Alcedo.ViewModels"
+    x:DataType="viewModels:SettingsViewModel">
 
     <ScrollView>
         <VerticalStackLayout Padding="30,0" Spacing="25">
@@ -19,28 +21,28 @@
                     x:Name="unspecifiedRadioButton"
                     Grid.Row="1"
                     Grid.Column="0"
-                    CheckedChanged="OnThemeChanged"
                     Content="System"
                     GroupName="Theme"
                     HorizontalOptions="Center"
+                    IsChecked="{Binding IsUnspecifiedThemeChecked}"
                     Value="Unspecified" />
                 <RadioButton
                     x:Name="darkRadioButton"
                     Grid.Row="1"
                     Grid.Column="1"
-                    CheckedChanged="OnThemeChanged"
                     Content="Dark"
                     GroupName="Theme"
                     HorizontalOptions="Center"
+                    IsChecked="{Binding IsDarkThemeChecked}"
                     Value="Dark" />
                 <RadioButton
                     x:Name="lightRadioButton"
                     Grid.Row="1"
                     Grid.Column="2"
-                    CheckedChanged="OnThemeChanged"
                     Content="Light"
                     GroupName="Theme"
                     HorizontalOptions="Center"
+                    IsChecked="{Binding IsLightThemeChecked}"
                     Value="Light" />
             </Grid>
 
@@ -60,7 +62,7 @@
                     Margin="5"
                     HeightRequest="150"
                     Placeholder="Enter OpenAI API Key"
-                    TextChanged="OnApiKeyChanged" />
+                    Text="{Binding ApiKey}" />
             </Grid>
 
         </VerticalStackLayout>
