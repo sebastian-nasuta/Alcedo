@@ -15,6 +15,7 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
     private ImageSource? _loadedImageSource;
     private bool _isLoading;
     private ObservableCollection<TagGroup> _tagGroups = [];
+    private string? _customTag;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -66,6 +67,16 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         set
         {
             _tagGroups = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? CustomTag
+    {
+        get => !string.IsNullOrWhiteSpace(_customTag) ? _customTag : null;
+        set
+        {
+            _customTag = value;
             OnPropertyChanged();
         }
     }
@@ -138,7 +149,7 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
                 throw new ApplicationException("No image loaded.");
             }
 
-            var groupedTags = await _imageTaggingService.GetTagsAsync(Base64Image, GetCustomTag());
+            var groupedTags = await _imageTaggingService.GetTagsAsync(Base64Image, CustomTag);
 
             TagGroups.Clear();
 
@@ -166,7 +177,7 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         try
         {
             IsLoading = true;
-            var allTags = string.Join(" ", TagGroups.SelectMany(group => group.Tags.Select(tag => "#" + tag)));
+            var allTags = string.Join(" ", TagGroups.SelectMany(group => group.Tags.Select(tag => tag)));
             await Clipboard.SetTextAsync(allTags);
         }
         catch (Exception ex)
@@ -235,8 +246,6 @@ internal partial class ImageTaggingViewModel : INotifyPropertyChanged
         LoadedImageSource = string.IsNullOrEmpty(Base64Image) ? null : ImageSource.FromStream(() => new MemoryStream(Convert.FromBase64String(Base64Image)));
     }
 
-    private string? GetCustomTag() => null;//!string.IsNullOrWhiteSpace(customTagEntry.Text) ? customTagEntry.Text : null;
-    
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

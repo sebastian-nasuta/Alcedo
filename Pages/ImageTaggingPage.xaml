@@ -25,7 +25,8 @@
                 Grid.ColumnSpan="3"
                 Margin="5"
                 HorizontalOptions="Fill"
-                Placeholder="Enter custom tag" />
+                Placeholder="Enter custom tag"
+                Text="{Binding CustomTag}" />
 
             <Button
                 x:Name="loadImageBtn"

@@ -61,21 +61,20 @@ internal class OpenAIImageTaggingService(ISettingsService settingsService) : IIm
             var tagsDictionary = new Dictionary<string, string[]>();
             if (!string.IsNullOrWhiteSpace(customTag))
             {
-                customTag = customTag.Trim();
+                customTag = customTag.Trim().TrimStart('#');
 
                 tagsDictionary.Add(
                     "inktober",
                     [
-                        customTag,
-                        "inktober",
-                        "inktober" + customTag,
-                        "inktober" + DateTime.UtcNow.Year,
-                        "inktober" + DateTime.UtcNow.Year + customTag,
-                        "inktober52",
-                        "inktober52" + customTag,
-                        "ink",
-                        "drawing",
-                        "blackAndWhite"
+                        "#" + customTag,
+                        "#inktober",
+                        "#inktober" + customTag,
+                        "#inktober" + DateTime.UtcNow.Year,
+                        "#inktober" + DateTime.UtcNow.Year + customTag,
+                        "#inktober52",
+                        "#inktober52" + customTag,
+                        "#ink",
+                        "#drawing",
                     ]);
             }
 
@@ -126,7 +125,7 @@ internal class OpenAIImageTaggingService(ISettingsService settingsService) : IIm
             ChatMessageContentPart.CreateTextPart("""
                 ~RULES~
                 - return only tags grouped in arrays named "general", "style" and "technique" in json format
-                - don't add any prefix signs like '#'
+                - every tag should have prefix '#'
                 - all tags should consist of letters and numbers, without special characters
                 - if a tag consists of multiple words, use camelCase
                 """)
@@ -134,10 +133,10 @@ internal class OpenAIImageTaggingService(ISettingsService settingsService) : IIm
 
         if (tagsDictionary.Count != 0)
         {
-            var existingTags = JsonSerializer.Serialize(tagsDictionary);
+            var existingTags = string.Join(", ", tagsDictionary.SelectMany(x => x.Value));
             chatMessageParts.Add(ChatMessageContentPart.CreateTextPart($"""
                 ~EXISTING TAGS~
-                The following tags are already present and should not be generated again:
+                The following tags are already present and you can never generate any of them again:
                 {existingTags}
                 """));
         }
@@ -146,30 +145,30 @@ internal class OpenAIImageTaggingService(ISettingsService settingsService) : IIm
             ~EXAMPLE~
             {
               "general": [
-                "sunset",
-                "ocean",
-                "waves",
-                "beach",
-                "palmTrees",
-                "silhouette",
-                "sky",
-                "clouds",
-                "scenic",
-                "horizon"
+                "#sunset",
+                "#ocean",
+                "#waves",
+                "#beach",
+                "#palmTrees",
+                "#silhouette",
+                "#sky",
+                "#clouds",
+                "#scenic",
+                "#horizon"
               ],
               "style": [
-                "realistic",
-                "vibrant",
-                "colorful",
-                "detailed",
-                "naturalistic"
+                "#realistic",
+                "#vibrant",
+                "#colorful",
+                "#detailed",
+                "#naturalistic"
               ],
               "technique": [
-                "oilPainting",
-                "brushStrokes",
-                "layering",
-                "blending",
-                "impasto"
+                "#oilPainting",
+                "#brushStrokes",
+                "#layering",
+                "#blending",
+                "#impasto"
               ]
             }
             """));
