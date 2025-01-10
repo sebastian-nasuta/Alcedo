@@ -3,12 +3,14 @@
     x:Class="Alcedo.Pages.BarcodeScannerPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:viewModels="clr-namespace:Alcedo.ViewModels"
-    x:DataType="viewModels:BarcodeScannerViewModel">
+    xmlns:cv="clr-namespace:Camera.MAUI;assembly=Camera.MAUI"
+    xmlns:vm="clr-namespace:Alcedo.ViewModels"
+    x:DataType="vm:BarcodeScannerViewModel">
+
     <VerticalStackLayout>
-        <Label
-            HorizontalOptions="Center"
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" />
+        <cv:CameraView
+            x:Name="cameraView"
+            HeightRequest="200"
+            WidthRequest="300" />
     </VerticalStackLayout>
 </ContentPage>

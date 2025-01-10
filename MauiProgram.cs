@@ -1,5 +1,6 @@
 ﻿using Alcedo.Services.ImageTaggingService;
 using Alcedo.Services.SettingsService;
+using Camera.MAUI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -13,6 +14,7 @@ namespace Alcedo
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCameraView()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

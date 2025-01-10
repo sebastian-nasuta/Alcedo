@@ -3,69 +3,73 @@
     x:Class="Alcedo.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:viewModels="clr-namespace:Alcedo.ViewModels"
-    x:DataType="viewModels:SettingsViewModel">
+    xmlns:vm="clr-namespace:Alcedo.ViewModels"
+    x:DataType="vm:SettingsViewModel">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30,0" Spacing="25">
 
-            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto">
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    FontAttributes="Bold"
-                    Text="Select Theme:" />
+        <Grid
+            Padding="30,0"
+            ColumnDefinitions="*,*,*"
+            RowDefinitions="Auto,Auto,Auto,Auto">
+            <Label
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="5"
+                FontAttributes="Bold"
+                Text="Select Theme:" />
 
-                <RadioButton
-                    x:Name="unspecifiedRadioButton"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Content="System"
-                    GroupName="Theme"
-                    HorizontalOptions="Center"
-                    IsChecked="{Binding IsUnspecifiedThemeChecked}"
-                    Value="Unspecified" />
-                <RadioButton
-                    x:Name="darkRadioButton"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Content="Dark"
-                    GroupName="Theme"
-                    HorizontalOptions="Center"
-                    IsChecked="{Binding IsDarkThemeChecked}"
-                    Value="Dark" />
-                <RadioButton
-                    x:Name="lightRadioButton"
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Content="Light"
-                    GroupName="Theme"
-                    HorizontalOptions="Center"
-                    IsChecked="{Binding IsLightThemeChecked}"
-                    Value="Light" />
-            </Grid>
+            <RadioButton
+                x:Name="unspecifiedRadioButton"
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="5"
+                Content="System"
+                GroupName="Theme"
+                HorizontalOptions="Center"
+                IsChecked="{Binding IsUnspecifiedThemeChecked}"
+                Value="Unspecified" />
+            <RadioButton
+                x:Name="darkRadioButton"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"
+                Content="Dark"
+                GroupName="Theme"
+                HorizontalOptions="Center"
+                IsChecked="{Binding IsDarkThemeChecked}"
+                Value="Dark" />
+            <RadioButton
+                x:Name="lightRadioButton"
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="5"
+                Content="Light"
+                GroupName="Theme"
+                HorizontalOptions="Center"
+                IsChecked="{Binding IsLightThemeChecked}"
+                Value="Light" />
 
-            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    FontAttributes="Bold"
-                    Text="OpenAI API Key:" />
+            <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="5"
+                FontAttributes="Bold"
+                Text="OpenAI API Key:" />
 
-                <Editor
-                    x:Name="apiKeyEditor"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Margin="5"
-                    HeightRequest="150"
-                    Placeholder="Enter OpenAI API Key"
-                    Text="{Binding ApiKey}" />
-            </Grid>
+            <Editor
+                x:Name="apiKeyEditor"
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="5"
+                HeightRequest="150"
+                Placeholder="Enter OpenAI API Key"
+                Text="{Binding ApiKey}" />
+        </Grid>
 
-        </VerticalStackLayout>
     </ScrollView>
 
 </ContentPage>

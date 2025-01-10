@@ -4,9 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:converters="clr-namespace:Alcedo.Converters"
-    xmlns:models="clr-namespace:Alcedo.Models"
-    xmlns:viewModels="clr-namespace:Alcedo.ViewModels"
-    x:DataType="viewModels:ImageTaggingViewModel">
+    xmlns:m="clr-namespace:Alcedo.Models"
+    xmlns:vm="clr-namespace:Alcedo.ViewModels"
+    x:DataType="vm:ImageTaggingViewModel">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -100,6 +100,7 @@
                 x:Name="loadingIndicator"
                 Grid.Row="4"
                 Grid.ColumnSpan="3"
+                Margin="5"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsLoading}"
                 IsVisible="{Binding IsLoading}"
@@ -112,7 +113,7 @@
                 Margin="5"
                 ItemsSource="{Binding TagGroups}">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:TagGroup">
+                    <DataTemplate x:DataType="m:TagGroup">
                         <StackLayout>
                             <Label
                                 Margin="5"
