@@ -1,7 +1,9 @@
 using Alcedo.ViewModels;
+using ZXing.Net.Maui;
+/*
 using Camera.MAUI;
-using Camera.MAUI.ZXing;
 using Camera.MAUI.ZXingHelper;
+*/
 
 namespace Alcedo.Pages;
 
@@ -11,52 +13,22 @@ public partial class BarcodeScannerPage : ContentPage
     {
         InitializeComponent();
         BindingContext = new BarcodeScannerViewModel();
-        cameraView.BarCodeOptions = new BarcodeDecodeOptions
+        
+        barcodeReader.Options = new BarcodeReaderOptions()
         {
             AutoRotate = true,
-            TryInverted = true,
+            Formats = BarcodeFormats.All,
+            Multiple = true,
             TryHarder = true,
-            ReadMultipleCodes = true,
-            PossibleFormats = { BarcodeFormat.All_1D }
+            TryInverted = true
         };
-        cameraView.BarCodeDecoder = new ZXingBarcodeDecoder();
     }
 
-    private void CamerasLoaded(object? sender, EventArgs e)
+    private void CameraBarcodeReaderView_BarcodesDetected(object sender, BarcodeDetectionEventArgs e)
     {
-        if (cameraView.NumCamerasDetected > 0)
+        Dispatcher.Dispatch(() =>
         {
-            if (cameraView.NumMicrophonesDetected > 0)
-                cameraView.Microphone = cameraView.Microphones.First();
-            cameraView.Camera = cameraView.Cameras.First();
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                if (await cameraView.StartCameraAsync() == CameraResult.Success)
-                {
-                    //controlButton.Text = "Stop";
-                    //playing = true;
-                }
-            });
-        }
-    }
-
-    private async void OnBarcodeDetected(object? sender, BarcodeEventArgs args)
-    {
-        System.Diagnostics.Debugger.Break();
-        foreach (var result in args.Result)
-        {
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                //await Toast.Make(result.Text, ToastDuration.Long).Show();
-                await Task.CompletedTask;
-            });
-        }
-    }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        cameraView.BarcodeDetected += OnBarcodeDetected;
-        cameraView.CamerasLoaded += CamerasLoaded;
+            barcodeResult.Text = $"{e.Results[0].Value} {e.Results[0].Format}";
+        });
     }
 }
