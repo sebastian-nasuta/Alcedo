@@ -9,18 +9,13 @@
 
     <ScrollView>
         <VerticalStackLayout
+            x:Name="verticalStackLayout"
             Padding="30,0"
             HorizontalOptions="Fill"
             Spacing="25"
             VerticalOptions="Fill">
 
-            <zxing:CameraBarcodeReaderView
-                x:Name="barcodeReader"
-                BarcodesDetected="CameraBarcodeReaderView_BarcodesDetected"
-                HeightRequest="300"
-                IsDetecting="True"
-                IsTorchOn="False"
-                WidthRequest="300" />
+            <zxing:CameraBarcodeReaderView x:Name="barcodeReader" />
 
             <Label
                 x:Name="barcodeResult"
