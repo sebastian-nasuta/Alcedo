@@ -1,9 +1,9 @@
 ﻿using Alcedo.Services.ImageTaggingService;
 using Alcedo.Services.SettingsService;
+using BarcodeScanner.Mobile;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using ZXing.Net.Maui.Controls;
 
 namespace Alcedo
 {
@@ -14,7 +14,6 @@ namespace Alcedo
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseBarcodeReader()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -22,6 +21,10 @@ namespace Alcedo
                     fonts.AddFont("MaterialSymbolsOutlined.ttf", "MSO");
                     fonts.AddFont("MaterialSymbolsRounded.ttf", "MSR");
                     fonts.AddFont("MaterialSymbolsSharp.ttf", "MSS");
+                })
+                .ConfigureMauiHandlers(handlers =>
+                {
+                    handlers.AddBarcodeScannerHandler();
                 });
 
             using var stream = Assembly.GetExecutingAssembly()

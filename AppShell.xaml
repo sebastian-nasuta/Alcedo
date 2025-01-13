@@ -14,9 +14,9 @@
         Route="ImageTaggingPage" />
 
     <ShellContent
-        Title="Barcode scanner ZXing"
-        ContentTemplate="{DataTemplate pages:BarcodeScannerZXingPage}"
-        Route="BarcodeScannerZXingPage" />
+        Title="Barcode scanner Google Vision"
+        ContentTemplate="{DataTemplate pages:BarcodeScannerGoogleVisionPage}"
+        Route="BarcodeScannerGoogleVisionPage" />
 
     <ShellContent
         Title="Settings"
