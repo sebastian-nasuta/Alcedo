@@ -13,21 +13,22 @@ public partial class BarcodeScannerGoogleVisionPage : ContentPage
 #endif
     }
 
-    private void Camera_OnDetected(object sender, BarcodeScanner.Mobile.OnDetectedEventArg e)
+    private async void Camera_OnDetected(object sender, OnDetectedEventArg e)
     {
         List<BarcodeResult> obj = e.BarcodeResults;
+        string result = string.Join(Environment.NewLine, obj.Select(x => x.DisplayValue));
 
-        string result = string.Empty;
-        for (int i = 0; i < obj.Count; i++)
+        Dispatcher.Dispatch(() =>
         {
-            result += $"Type : {obj[i].BarcodeType}, Value : {obj[i].DisplayValue}{Environment.NewLine}";
-        }
-
-        Dispatcher.Dispatch(async () =>
-        {
-            await DisplayAlert("Result", result, "OK");
-            // If you want to start scanning again
-            Camera.IsScanning = true;
+            BarcodesEditor.Text = result;
         });
+
+        await Task.Delay(1000);
+        Camera.IsScanning = true;
+    }
+
+    private void CopyBarcodeButton_Clicked(object sender, EventArgs e)
+    {
+        Clipboard.SetTextAsync(BarcodesEditor.Text);
     }
 }

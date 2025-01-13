@@ -9,18 +9,40 @@
     <ScrollView>
         <VerticalStackLayout
             Padding="30,0"
+            HorizontalOptions="Fill"
             Spacing="25"
-            VerticalOptions="Center">
+            VerticalOptions="Fill">
 
             <gv:CameraView
                 x:Name="Camera"
                 HorizontalOptions="FillAndExpand"
                 OnDetected="Camera_OnDetected"
                 ScanInterval="100"
+                HeightRequest="300"
+                WidthRequest="1"
                 TorchOn="False"
                 VerticalOptions="FillAndExpand"
                 VibrationOnDetected="True" />
 
+            <Label
+                Margin="5"
+                FontSize="20"
+                Text="Barcodes"
+                VerticalOptions="Center" />
+            <Editor
+                x:Name="BarcodesEditor"
+                Margin="5"
+                HeightRequest="160"
+                Text="Here will be the detected barcodes" />
+
+            <Button
+                x:Name="CopyBarcodeButton"
+                Clicked="CopyBarcodeButton_Clicked"
+                Margin="5"
+                FontFamily="MSO"
+                FontSize="60"
+                HorizontalOptions="Fill"
+                Text="content_copy" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
